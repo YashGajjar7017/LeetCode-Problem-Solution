@@ -15,7 +15,7 @@
 
 This project contains solutions for problems from LeetCode, "Coding Interviews (2nd Edition)", "Coding Interviews (Special Edition)", "Cracking the Coding Interview (6th Edition)", etc. All solutions are implemented in multiple programming languages, including but not limited to: Java, Python, C++, Go, TypeScript, Rust. We are working hard to update, welcome to Star 🌟 and follow [this project](https://github.com/doocs/leetcode) to get the latest updates.
 
-[中文文档](/README.md)
+[Welcome](/README.md)
 
 ## Site
 
@@ -198,25 +198,6 @@ I'm looking for long-term contributors/partners to this repo! Send me [PRs](http
     <img alt="Star Geographical Distribution of doocs/leetcode" src="https://next.ossinsight.io/widgets/official/analyze-repo-stars-map/thumbnail.png?repo_id=149001365&activity=stars&image_size=auto&color_scheme=light" width="721" height="auto">
   </picture>
 </a>
-
-## Our Top Contributors
-
-This project exists thanks to all the people who contribute.
-
-<a href="https://github.com/doocs/leetcode/graphs/contributors" target="_blank"><img src="https://contrib.rocks/image?repo=doocs/leetcode&max=500" /></a>
-
-## Copyright
-
-The copyright of this project belongs to [Doocs](https://github.com/doocs) community. For commercial reprints, please contact [@yanglbme](mailto:contact@yanglibin.info) for authorization. For non-commercial reprints, please indicate the source.
-
-## Support Us
-
-If you find this project helpful, consider supporting us by buying us a coffee ☕️
-👉 [https://paypal.me/yanglbme](https://paypal.me/yanglbme)
-
-## Contact Us
-
-We welcome everyone to add @yanglbme's personal WeChat (WeChat ID: YLB0109), with the note "leetcode". In the future, we will create algorithm and technology related discussion groups, where we can learn and share experiences together, and make progress together.
 
 | <img src="https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/gh/doocs/images/qrcode-for-yanglbme-en.png" width="260px" align="left"/> |
 | --------------------------------------------------------------------------------------------------------------------------------- |
