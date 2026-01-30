@@ -13,13 +13,13 @@
 
 ## Introduction
 
-This project contains solutions for problems from LeetCode, "Coding Interviews (2nd Edition)", "Coding Interviews (Special Edition)", "Cracking the Coding Interview (6th Edition)", etc. All solutions are implemented in multiple programming languages, including but not limited to: Java, Python, C++, Go, TypeScript, Rust. We are working hard to update, welcome to Star 🌟 and follow [this project](https://github.com/doocs/leetcode) to get the latest updates.
+This project contains solutions for problems from LeetCode, "Coding Interviews (2nd Edition)", "Coding Interviews (Special Edition)", "Cracking the Coding Interview (6th Edition)", etc. All solutions are implemented in multiple programming languages, including but not limited to: Java, Python, C++, Go, TypeScript, Rust. We are working hard to update, welcome to Star 🌟 and follow [this project](https://github.com/yashgajjar7017/leetcode) to get the latest updates.
 
 [Welcome](/README.md)
 
 ## Site
 
-https://leetcode.doocs.org/en
+https://leetcode.yashgajjar7017.org/en
 
 ## Solutions
 
@@ -201,7 +201,3 @@ I'm looking for long-term contributors/partners to this repo! Send me [PRs](http
 
 | <img src="https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/gh/doocs/images/qrcode-for-yanglbme-en.png" width="260px" align="left"/> |
 | --------------------------------------------------------------------------------------------------------------------------------- |
-
-## License
-
-This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>.
