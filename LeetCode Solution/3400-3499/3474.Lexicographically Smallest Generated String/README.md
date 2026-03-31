@@ -149,6 +149,85 @@ tags:
 ```go
 
 ```
+```JS
+var generateString = function(str1, str2) {
+    const n = str1.length;
+    const m = str2.length;
+    const len = n + m - 1;
+
+    let word = new Array(len).fill('?');
+
+    // Phase 1: Apply 'T'
+    for (let i = 0; i < n; i++) {
+        if (str1[i] === 'T') {
+            for (let j = 0; j < m; j++) {
+                if (word[i + j] === '?' || word[i + j] === str2[j]) {
+                    word[i + j] = str2[j];
+                } else {
+                    return "";
+                }
+            }
+        }
+    }
+
+    // Fill remaining
+    for (let i = 0; i < len; i++) {
+        if (word[i] === '?') word[i] = 'a';
+    }
+
+    // Helper: check all T valid
+    function validT() {
+        for (let i = 0; i < n; i++) {
+            if (str1[i] === 'T') {
+                for (let j = 0; j < m; j++) {
+                    if (word[i + j] !== str2[j]) return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    // Phase 3: Fix 'F'
+    for (let i = 0; i < n; i++) {
+        if (str1[i] === 'F') {
+
+            let match = true;
+            for (let j = 0; j < m; j++) {
+                if (word[i + j] !== str2[j]) {
+                    match = false;
+                    break;
+                }
+            }
+
+            if (match) {
+                let fixed = false;
+
+                for (let j = m - 1; j >= 0 && !fixed; j--) {
+                    let original = word[i + j];
+
+                    for (let c = 0; c < 26; c++) {
+                        let ch = String.fromCharCode(97 + c);
+                        if (ch === str2[j]) continue;
+
+                        word[i + j] = ch;
+
+                        if (validT()) {
+                            fixed = true;
+                            break;
+                        }
+                    }
+
+                    if (!fixed) word[i + j] = original; // revert
+                }
+
+                if (!fixed) return "";
+            }
+        }
+    }
+
+    return word.join('');
+};
+```
 
 <!-- tabs:end -->
 
