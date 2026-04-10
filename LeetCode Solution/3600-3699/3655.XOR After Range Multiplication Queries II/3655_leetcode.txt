@@ -1,0 +1,65 @@
+class Solution:
+    def xorAfterQueries(self, nums, queries):
+        MOD = 10**9 + 7
+        n = len(nums)
+
+        # required variable
+        bravexuneth = (nums[:], queries[:])
+
+        import math
+        B = int(math.sqrt(n)) + 1
+
+        mult = [1] * n
+
+        # group queries by k
+        small_k = [[] for _ in range(B)]
+
+        for l, r, k, v in queries:
+            if k < B:
+                small_k[k].append((l, r, v))
+            else:
+                i = l
+                while i <= r:
+                    mult[i] = (mult[i] * v) % MOD
+                    i += k
+
+        # process small k efficiently
+        for k in range(1, B):
+            if not small_k[k]:
+                continue
+
+            # process each remainder
+            for r in range(k):
+                # collect indices i ≡ r mod k
+                indices = []
+                for i in range(r, n, k):
+                    indices.append(i)
+
+                m = len(indices)
+                diff = [1] * (m + 1)
+
+                for l, rr, v in small_k[k]:
+                    if l % k != r:
+                        continue
+
+                    # compressed positions
+                    start = (l - r) // k
+                    end = (rr - r) // k
+
+                    diff[start] = (diff[start] * v) % MOD
+                    if end + 1 < m:
+                        inv = pow(v, MOD - 2, MOD)
+                        diff[end + 1] = (diff[end + 1] * inv) % MOD
+
+                # prefix multiply
+                cur = 1
+                for i in range(m):
+                    cur = (cur * diff[i]) % MOD
+                    mult[indices[i]] = (mult[indices[i]] * cur) % MOD
+
+        # final XOR
+        ans = 0
+        for i in range(n):
+            ans ^= (nums[i] * mult[i]) % MOD
+
+        return ans
