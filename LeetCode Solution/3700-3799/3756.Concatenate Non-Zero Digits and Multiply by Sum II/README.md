@@ -151,7 +151,47 @@ tags:
 #### Python3
 
 ```python
-
+class Solution:
+    def sumAndMultiply(self, s: str, queries: list[list[int]]) -> list[int]:
+        MOD = 10**9 + 7
+        m = len(s)
+        
+        # Precompute powers of 10
+        pow10 = [1] * (m + 1)
+        for i in range(1, m + 1):
+            pow10[i] = (pow10[i - 1] * 10) % MOD
+            
+        # Prefix arrays
+        pref_sum = [0] * (m + 1)
+        pref_cnt = [0] * (m + 1)
+        pref_val = [0] * (m + 1)
+        
+        for i in range(m):
+            digit = ord(s[i]) - ord('0')
+            pref_sum[i + 1] = pref_sum[i] + digit
+            
+            if digit == 0:
+                pref_cnt[i + 1] = pref_cnt[i]
+                pref_val[i + 1] = pref_val[i]
+            else:
+                pref_cnt[i + 1] = pref_cnt[i] + 1
+                pref_val[i + 1] = (pref_val[i] * 10 + digit) % MOD
+                
+        ans = []
+        for l, r in queries:
+            # 1. Total sum of digits in s[l..r]
+            sum_digits = pref_sum[r + 1] - pref_sum[l]
+            
+            # 2. Number of non-zero digits in s[l..r]
+            cnt_nonzero = pref_cnt[r + 1] - pref_cnt[l]
+            
+            # 3. Extract the value of x modulo MOD
+            x = (pref_val[r + 1] - pref_val[l] * pow10[cnt_nonzero]) % MOD
+            
+            # 4. Multiply by sum and store the result
+            ans.append((x * sum_digits) % MOD)
+            
+        return ans
 ```
 
 #### Java
