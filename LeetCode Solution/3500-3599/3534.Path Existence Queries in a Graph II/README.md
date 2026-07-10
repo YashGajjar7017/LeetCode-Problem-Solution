@@ -167,7 +167,58 @@ tags:
 #### Python3
 
 ```python
-
+class Solution:
+    def pathExistenceQueries(self, n: int, nums: list[int], maxDiff: int, queries: list[list[int]]) -> list[int]:
+        # Step 1: Sort indices by their values
+        sorted_indices = sorted(range(n), key=lambda x: nums[x])
+        
+        # Position mapping from original index to sorted index
+        pos = [0] * n
+        for sorted_idx, orig_idx in enumerate(sorted_indices):
+            pos[orig_idx] = sorted_idx
+            
+        # Step 2: Precompute the 2^k jump table (Binary Lifting)
+        # 17 because 2^16 = 65536 and 2^17 = 131072 > n
+        LOG_MAX = 17 
+        fa = [[0] * LOG_MAX for _ in range(n)]
+        
+        j = 0
+        for i in range(n):
+            # Find the leftmost element j that i can reach
+            while nums[sorted_indices[i]] - nums[sorted_indices[j]] > maxDiff:
+                j += 1
+            fa[i][0] = j
+            
+            # Populate binary lifting steps
+            for k in range(1, LOG_MAX):
+                fa[i][k] = fa[fa[i][k - 1]][k - 1]
+                
+        ans = []
+        for u, v in queries:
+            if u == v:
+                ans.append(0)
+                continue
+                
+            a, b = pos[u], pos[v]
+            if a < b:
+                a, b = b, a  # Ensure a is always the larger/rightmost index
+                
+            steps = 0
+            # Use binary lifting to jump towards b
+            for k in range(LOG_MAX - 1, -1, -1):
+                if fa[a][k] > b:
+                    a = fa[a][k]
+                    steps |= (1 << k)
+                    
+            # Check if it's impossible to reach or pass b in one final step
+            if fa[a][0] > b:
+                ans.append(-1)
+            else:
+                if a != b:
+                    steps += 1
+                ans.append(steps)
+                
+        return ans
 ```
 
 #### Java
