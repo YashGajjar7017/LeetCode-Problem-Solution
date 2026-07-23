@@ -107,7 +107,26 @@ tags:
 #### C++
 
 ```cpp
+#include <vector>
+#include <bit>
 
+class Solution {
+public:
+    int uniqueXorTriplets(std::vector<int>& nums) {
+        int n = nums.size();
+        
+        // Base cases for small n
+        if (n < 3) {
+            return n;
+        }
+        
+        // Find the bit length of n (i.e. smallest power of 2 strictly greater than n)
+        int bitLength = 32 - __builtin_clz(n);
+        
+        // Result is 2^bitLength
+        return 1 << bitLength;
+    }
+};
 ```
 
 #### Go
