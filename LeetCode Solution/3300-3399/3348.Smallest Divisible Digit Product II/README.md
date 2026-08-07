@@ -91,7 +91,125 @@ tags:
 #### Python3
 
 ```python
+class Solution:
+    def smallestNumber(self, num: str, t: int) -> str:
+        # Step 1: Factorize t into prime factors 2, 3, 5, 7
+        c2 = c3 = c5 = c7 = 0
+        temp_t = t
+        for p, count_var in [(2, 'c2'), (3, 'c3'), (5, 'c5'), (7, 'c7')]:
+            while temp_t % p == 0:
+                temp_t //= p
+                if count_var == 'c2': c2 += 1
+                elif count_var == 'c3': c3 += 1
+                elif count_var == 'c5': c5 += 1
+                elif count_var == 'c7': c7 += 1
+        
+        # If t has prime factors other than 2, 3, 5, 7, impossible
+        if temp_t > 1:
+            return "-1"
 
+        # Step 2: Precompute exact_best using layer-by-layer BFS
+        # Digits mapping for 2 and 3: 2:(1,0), 3:(0,1), 4:(2,0), 6:(1,1), 8:(3,0), 9:(0,2)
+        digit_powers = {
+            2: (1, 0), 3: (0, 1), 4: (2, 0),
+            6: (1, 1), 8: (3, 0), 9: (0, 2)
+        }
+        
+        MAX_R2, MAX_R3 = 65, 41
+        exact_best = {(0, 0): ()}
+        
+        curr_layer = {(0, 0): ()}
+        for _ in range(40):  # At most 40 non-1 digits needed
+            if not curr_layer:
+                break
+            next_layer = {}
+            for (p2, p3), T in curr_layer.items():
+                for d, (dp2, dp3) in digit_powers.items():
+                    np2, np3 = p2 + dp2, p3 + dp3
+                    if np2 > MAX_R2 or np3 > MAX_R3:
+                        continue
+                    nT = tuple(sorted(T + (d,)))
+                    if (np2, np3) in exact_best:
+                        continue
+                    if (np2, np3) not in next_layer or nT < next_layer[(np2, np3)]:
+                        next_layer[(np2, np3)] = nT
+            
+            for state, T in next_layer.items():
+                exact_best[state] = T
+            curr_layer = next_layer
+
+        # Suffix DP to get opt[r2][r3]
+        def compare_tuples(t1, t2):
+            if t1 is None: return t2
+            if t2 is None: return t1
+            if len(t1) != len(t2):
+                return t1 if len(t1) < len(t2) else t2
+            return min(t1, t2)
+
+        opt = [[None] * (MAX_R3 + 1) for _ in range(MAX_R2 + 1)]
+        for r2 in range(MAX_R2, -1, -1):
+            for r3 in range(MAX_R3, -1, -1):
+                res = exact_best.get((r2, r3), None)
+                if r2 + 1 <= MAX_R2:
+                    res = compare_tuples(res, opt[r2 + 1][r3])
+                if r3 + 1 <= MAX_R3:
+                    res = compare_tuples(res, opt[r2][r3 + 1])
+                opt[r2][r3] = res
+
+        # Digit factor power mappings
+        pow2 = [0, 0, 1, 0, 2, 0, 1, 0, 3, 0]
+        pow3 = [0, 0, 0, 1, 0, 0, 1, 0, 0, 2]
+        pow5 = [0, 0, 0, 0, 0, 1, 0, 0, 0, 0]
+        pow7 = [0, 0, 0, 0, 0, 0, 0, 1, 0, 0]
+
+        N = len(num)
+        pref2 = [0] * (N + 1)
+        pref3 = [0] * (N + 1)
+        pref5 = [0] * (N + 1)
+        pref7 = [0] * (N + 1)
+
+        zero_idx = N
+        for i in range(N):
+            if num[i] == '0':
+                zero_idx = i
+                break
+            d = int(num[i])
+            pref2[i + 1] = pref2[i] + pow2[d]
+            pref3[i + 1] = pref3[i] + pow3[d]
+            pref5[i + 1] = pref5[i] + pow5[d]
+            pref7[i + 1] = pref7[i] + pow7[d]
+
+        # Check if num itself is valid
+        if zero_idx == N and pref2[N] >= c2 and pref3[N] >= c3 and pref5[N] >= c5 and pref7[N] >= c7:
+            return num
+
+        # Step 3: Greedy search for length N solution
+        for L in range(min(N - 1, zero_idx), -1, -1):
+            rem_len = N - 1 - L
+            start_d = (int(num[L]) + 1) if num[L] != '0' else 1
+            for d in range(start_d, 10):
+                r2 = max(0, c2 - pref2[L] - pow2[d])
+                r3 = max(0, c3 - pref3[L] - pow3[d])
+                r5 = max(0, c5 - pref5[L] - pow5[d])
+                r7 = max(0, c7 - pref7[L] - pow7[d])
+
+                D_23 = opt[r2][r3]
+                req_non1 = len(D_23) + r5 + r7
+                if req_non1 <= rem_len:
+                    non1_digits = list(D_23) + [5] * r5 + [7] * r7
+                    non1_digits.sort()
+                    ones_count = rem_len - req_non1
+                    suffix = ('1' * ones_count) + "".join(map(str, non1_digits))
+                    return num[:L] + str(d) + suffix
+
+        # Step 4: Fallback to length > N solution
+        D_23 = opt[c2][c3]
+        req_non1 = len(D_23) + c5 + c7
+        target_len = max(N + 1, req_non1)
+        ones_count = target_len - req_non1
+        non1_digits = list(D_23) + [5] * c5 + [7] * c7
+        non1_digits.sort()
+        return ('1' * ones_count) + "".join(map(str, non1_digits))
 ```
 
 #### Java
