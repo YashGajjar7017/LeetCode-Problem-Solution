@@ -129,7 +129,90 @@ tags:
 #### C++
 
 ```cpp
+#include <vector>
+#include <string>
+#include <algorithm>
 
+using namespace std;
+
+class Solution {
+public:
+    vector<int> validSequence(string word1, string word2) {
+        int n = word1.length();
+        int m = word2.length();
+
+        // pos[c] stores all 0-based indices where character c appears in word1
+        vector<vector<int>> pos(26);
+        for (int i = 0; i < n; ++i) {
+            pos[word1[i] - 'a'].push_back(i);
+        }
+
+        // last_pos[k] = largest index p in word1 such that word2[k...m-1] 
+        // can be matched exactly starting at or after p.
+        vector<int> last_pos(m + 1);
+        last_pos[m] = n;
+
+        for (int k = m - 1; k >= 0; --k) {
+            if (last_pos[k + 1] == -1) {
+                last_pos[k] = -1;
+                continue;
+            }
+            int c = word2[k] - 'a';
+            // Find largest index < last_pos[k + 1] matching word2[k]
+            auto it = lower_bound(pos[c].begin(), pos[c].end(), last_pos[k + 1]);
+            if (it == pos[c].begin()) {
+                last_pos[k] = -1;
+            } else {
+                --it;
+                last_pos[k] = *it;
+            }
+        }
+
+        vector<int> seq(m);
+        int prev = -1;
+        bool changed = false;
+
+        for (int i = 0; i < m; ++i) {
+            if (changed) {
+                // Must match word2[i] exactly
+                int c = word2[i] - 'a';
+                auto it = upper_bound(pos[c].begin(), pos[c].end(), prev);
+                if (it == pos[c].end() || *it >= last_pos[i + 1]) {
+                    return {};
+                }
+                seq[i] = *it;
+                prev = *it;
+            } else {
+                int j = prev + 1;
+                if (j >= n) return {};
+
+                if (word1[j] == word2[i]) {
+                    // Exact match at the minimum possible index
+                    seq[i] = j;
+                    prev = j;
+                } else {
+                    // Mismatch at j = prev + 1
+                    if (j < last_pos[i + 1]) {
+                        seq[i] = j;
+                        prev = j;
+                        changed = true;
+                    } else {
+                        // Cannot mismatch at j, must find an exact match for word2[i]
+                        int c = word2[i] - 'a';
+                        auto it = upper_bound(pos[c].begin(), pos[c].end(), prev);
+                        if (it == pos[c].end()) {
+                            return {};
+                        }
+                        seq[i] = *it;
+                        prev = *it;
+                    }
+                }
+            }
+        }
+
+        return seq;
+    }
+};
 ```
 
 #### Go
