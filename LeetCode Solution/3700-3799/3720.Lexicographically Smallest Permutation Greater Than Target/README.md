@@ -100,7 +100,57 @@ tags:
 #### Python3
 
 ```python
+from collections import Counter
 
+class Solution:
+    def lexGreaterPermutation(self, s: str, target: str) -> str:
+        n = len(s)
+        s_counts = Counter(s)
+        
+        best_prefix_len = -1
+        best_char = None
+        
+        prefix_counts = Counter()
+        
+        for i in range(n):
+            curr_target_char = target[i]
+            
+            # Find the smallest available character strictly greater than target[i]
+            for c_code in range(ord(curr_target_char) + 1, ord('z') + 1):
+                c = chr(c_code)
+                if s_counts[c] - prefix_counts[c] > 0:
+                    best_prefix_len = i
+                    best_char = c
+                    break
+            
+            # Try to extend the matching prefix with target[i]
+            if s_counts[target[i]] - prefix_counts[target[i]] > 0:
+                prefix_counts[target[i]] += 1
+            else:
+                break
+                
+        if best_prefix_len == -1:
+            return ""
+            
+        result = []
+        rem_counts = Counter(s)
+        
+        # 1. Match prefix target[0...best_prefix_len-1]
+        for i in range(best_prefix_len):
+            result.append(target[i])
+            rem_counts[target[i]] -= 1
+            
+        # 2. Add the strictly greater character at position best_prefix_len
+        result.append(best_char)
+        rem_counts[best_char] -= 1
+        
+        # 3. Append remaining characters in ascending order
+        for c_code in range(ord('a'), ord('z') + 1):
+            c = chr(c_code)
+            if rem_counts[c] > 0:
+                result.append(c * rem_counts[c])
+                
+        return "".join(result)
 ```
 
 #### Java
