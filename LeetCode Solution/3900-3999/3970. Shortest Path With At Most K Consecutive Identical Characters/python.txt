@@ -1,0 +1,36 @@
+from heapq import heappush, heappop
+from math import inf
+
+class Solution:
+    def shortestPath(self, n: int, edges: list[list[int]], labels: str, k: int) -> int:
+        g = [[] for _ in range(n)]
+        for u, v, w in edges:
+            g[u].append((v, w))
+            
+        # dist[u][cur] stores the minimum distance to reach node u 
+        # with `cur` consecutive identical characters ending at u
+        dist = [[inf] * (k + 1) for _ in range(n)]
+        
+        # Initial state: starting at node 0. 
+        # Depending on the problem, node 0 starts with a run length of 1.
+        dist[0][1] = 0
+        pq = [(0, 0, 1)]  # (distance, node, consecutive_count)
+        
+        while pq:
+            d, u, cur = heappop(pq)
+            
+            if u == n - 1:
+                return d
+                
+            if d > dist[u][cur]:
+                continue
+                
+            for v, w in g[u]:
+                nxt = 1 if labels[v] != labels[u] else cur + 1
+                if nxt <= k:
+                    nd = d + w
+                    if nd < dist[v][nxt]:
+                        dist[v][nxt] = nd
+                        heappush(pq, (nd, v, nxt))
+                        
+        return -1
